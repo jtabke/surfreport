@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "surf-report"
+version = "0.0.1"
+requires-python = ">=3.8"
+description = "Get the surf report in your terminal"
+authors = [{ name = "jtabke" }]
+license = { text = "MIT" }
+readme = "README.md"
+keywords = ["surf", "surf report", "weather", "ocean"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = ["requests"]
+
+[project.optional-dependencies]
+dev = ["ruff", "pyright"]
+
+[project.urls]
+homepage = "https://github.com/jtabke/surf-report"
+repository = "https://github.com/jtabke/surf-report"
+
+[tool.ruff]
+extend-select = ["I"] # Adds import sorting to existing rules
