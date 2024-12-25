@@ -1,7 +1,7 @@
 import logging
 
 from data.surfline import get_region_list, get_region_overview
-from utils.helpers import sort_regions
+from utils.helpers import parse_arguments, sort_regions
 
 # Constants
 LOG_LEVEL = logging.NOTSET
@@ -20,11 +20,14 @@ logging.basicConfig(
 )
 
 
-def display_regions(regions):
+def display_regions(regions, verbose=False):
     """Displays a list of regions to the user."""
     print("\nSelect a Region:")
     for i, region in enumerate(regions):
-        print(f"{i + 1}. {region['name']}")
+        if verbose:
+            print(f"{i + 1}. {region['name']} ({region['type']}) [ID: {region['_id']}]")
+        else:
+            print(f"{i + 1}.  {region['name']} ({region['type']})")
     print("0. Back to Main Menu")
 
 
@@ -58,12 +61,13 @@ def display_region_overview(region_overview):
 
 
 def main():
+    args = parse_arguments()
     current_region_id = "58f7ed51dadb30820bb38782"
     while True:
         region_data = get_region_list(current_region_id)
         if region_data is not None:
             regions = sort_regions(region_data.get("contains", []))
-            display_regions(regions)
+            display_regions(regions, args.verbose)
             choice = get_user_choice(regions)
             if choice == 0:
                 if "liesIn" in region_data and region_data["liesIn"]:
