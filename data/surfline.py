@@ -5,6 +5,7 @@ import requests
 BASE_URL = "https://services.surfline.com/taxonomy"
 OVERVIEW_URL = "https://services.surfline.com/kbyg/regions/overview"
 SEARCH_URL = "https://services.surfline.com/search/site"
+SPOT_FORECAST_URL = "https://services.surfline.com/kbyg/spots/forecasts/conditions"
 
 
 class RegionOverviewError(Exception):
@@ -15,6 +16,12 @@ class RegionOverviewError(Exception):
 
 class TaxonomyError(Exception):
     """Custom exception for taxonomy errors."""
+
+    pass
+
+
+class SpotForecastError(Exception):
+    """Custom exception for spot forecast errors."""
 
     pass
 
@@ -60,7 +67,9 @@ def get_region_list(taxonomy_id, max_depth=0) -> dict:
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching taxonomy data: {e}")
+        logging.error(
+            f"Error fetching taxonomy data for taxonomy ID {taxonomy_id}: {e}"
+        )
         raise TaxonomyError("Failed to fetch taxonomy data") from e
 
 
@@ -80,8 +89,29 @@ def get_region_overview(region_id) -> dict:
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching region overview: {e}")
+        logging.error(f"Error fetching region overview for region ID {region_id}: {e}")
         raise RegionOverviewError("Failed to fetch region overview") from e
+
+
+def get_spot_forecast(spot_id: str, days: int = 5) -> dict:
+    """
+    Get the forecast for a specific spot from the Surfline API.
+
+    Parameters:
+    - spot_id (str): The ID of the surf spot.
+    - days (int): Number of days to fetch the forecast for. Default is 5.
+
+    Returns:
+    - dict: JSON response from the API containing the spot forecast.
+    """
+    params = {"spotId": spot_id, "days": days}
+    try:
+        response = requests.get(SPOT_FORECAST_URL, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching spot forecast for spot ID {spot_id}: {e}")
+        raise SpotForecastError("Failed to fetch spot forecast") from e
 
 
 if __name__ == "__main__":

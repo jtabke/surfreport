@@ -1,6 +1,6 @@
 import logging
 
-from data.surfline import get_region_list, get_region_overview
+from data.surfline import get_region_list, get_region_overview, get_spot_forecast
 from utils.helpers import parse_arguments, sort_regions
 
 # Constants
@@ -60,6 +60,17 @@ def display_region_overview(region_overview):
         )
 
 
+def display_spot_forecast(spot_forecast):
+    """Displays spot forecast observations"""
+    conditions = spot_forecast.get("data", {}).get("conditions", {})
+    print("\nSpot Forecast:")
+    if conditions:
+        for forecast in conditions:
+            print(f"\n{forecast.get("forecastDay", "forecastDay not found.")}")
+            print(f"* {forecast.get("headline", "No headline found.")}")
+            print(f"* {forecast.get("observation", "No observation found.")}")
+
+
 def main():
     args = parse_arguments()
     current_region_id = "58f7ed51dadb30820bb38782"
@@ -81,6 +92,10 @@ def main():
                     if region_overview is not None:
                         display_region_overview(region_overview)
                 current_region_id = current_region["_id"]
+                if current_region["type"] == "spot":
+                    spot_forecast = get_spot_forecast(current_region["spot"])
+                    if spot_forecast is not None:
+                        display_spot_forecast(spot_forecast)
         else:
             print("Failed to fetch region data.")
             continue
