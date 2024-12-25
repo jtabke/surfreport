@@ -19,7 +19,7 @@ class TaxonomyError(Exception):
     pass
 
 
-def search_surfline(query) -> list:
+def search_surfline(query) -> list[dict]:
     """
     Search for a query on the Surfline API.
 
