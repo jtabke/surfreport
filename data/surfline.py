@@ -4,6 +4,7 @@ import requests
 
 BASE_URL = "https://services.surfline.com/taxonomy"
 OVERVIEW_URL = "https://services.surfline.com/kbyg/regions/overview"
+SEARCH_URL = "https://services.surfline.com/search/site"
 
 
 class RegionOverviewError(Exception):
@@ -18,7 +19,41 @@ class TaxonomyError(Exception):
     pass
 
 
-def get_region_list(taxonomy_id, max_depth=0):
+def search_surfline(query) -> list:
+    """
+    Search for a query on the Surfline API.
+
+    Parameters:
+    - query (str): The search query string.
+
+    Returns:
+    - list: JSON response from the API.
+    """
+    params = {
+        "q": query,
+        "querySize": 5,
+        "suggestionSize": 5,
+    }
+    try:
+        response = requests.get(SEARCH_URL, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching search data: {e}")
+        raise Exception("Failed to fetch search data") from e
+
+
+def get_region_list(taxonomy_id, max_depth=0) -> dict:
+    """
+    Get the region list from the Surfline API.
+
+    Parameters:
+    - taxonomy_id (str): The ID of the taxonomy.
+    - max_depth (int): Maximum depth for fetching regions.
+
+    Returns:
+    - dict: JSON response from the API.
+    """
     params = {"type": "taxonomy", "id": taxonomy_id, "maxDepth": max_depth}
     try:
         response = requests.get(BASE_URL, params=params)
@@ -29,7 +64,16 @@ def get_region_list(taxonomy_id, max_depth=0):
         raise TaxonomyError("Failed to fetch taxonomy data") from e
 
 
-def get_region_overview(region_id):
+def get_region_overview(region_id) -> dict:
+    """
+    Get the region overview from the Surfline API.
+
+    Parameters:
+    - region_id (str): The ID of the subregion.
+
+    Returns:
+    - dict: JSON response from the API.
+    """
     params = {"subregionId": region_id}
     try:
         response = requests.get(OVERVIEW_URL, params=params)
