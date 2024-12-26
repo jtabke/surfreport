@@ -27,3 +27,6 @@ repository = "https://github.com/jtabke/surf-report"
 
 [tool.ruff]
 extend-select = ["I"] # Adds import sorting to existing rules
+
+[project.scripts]
+surf-report = "surf_report.main:main"
