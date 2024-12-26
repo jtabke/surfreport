@@ -7,6 +7,14 @@ def parse_arguments():
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Increase output verbosity"
     )
+    parser.add_argument("-s", "--search", action="store_true", help="Search for spot")
+    parser.add_argument(
+        "search_string",
+        type=str,
+        default=None,
+        nargs="?",
+        help="An optional string value passed from the CLI",
+    )
     return parser.parse_args()
 
 
