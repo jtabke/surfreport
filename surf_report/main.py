@@ -1,12 +1,12 @@
 import logging
 
-from data.surfline import (
+from surf_report.data.surfline import (
     get_region_list,
     get_region_overview,
     get_spot_forecast,
     search_surfline,
 )
-from utils.helpers import parse_arguments, sort_regions
+from surf_report.utils.helpers import parse_arguments, sort_regions
 
 # Constants
 LOG_LEVEL = logging.NOTSET
