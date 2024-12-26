@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "surf-report"
+name = "surfreport"
 version = "0.0.1"
 requires-python = ">=3.9"
 description = "Get the surf report in your terminal"
@@ -22,11 +22,11 @@ dependencies = ["requests"]
 dev = ["ruff", "pyright"]
 
 [project.urls]
-homepage = "https://github.com/jtabke/surf-report"
-repository = "https://github.com/jtabke/surf-report"
+homepage = "https://github.com/jtabke/surfreport"
+repository = "https://github.com/jtabke/surfreport"
 
 [tool.ruff]
 extend-select = ["I"] # Adds import sorting to existing rules
 
 [project.scripts]
-surf-report = "surf_report.main:main"
+surfreport = "surf_report.main:main"

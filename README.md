@@ -10,16 +10,16 @@
 
 ---
 
-# surf-report
+# surfreport
 
-**surf-report** is a Python package that allows you to retrieve surf reports directly from the terminal. It fetches data from surf report APIs, providing a command-line interface (CLI) for easy access to current and forecasted surf conditions.
+**surfreport** is a Python package that allows you to retrieve surf reports directly from the terminal. It fetches data from surf report APIs, providing a command-line interface (CLI) for easy access to current and forecasted surf conditions.
 
 ## Installation
 
 1. Clone this repository:
 
 ```sh
-git clone https://github.com/jtabke/surf-report.git
+git clone https://github.com/jtabke/surfreport.git
 cd surf-report
 ```
 
