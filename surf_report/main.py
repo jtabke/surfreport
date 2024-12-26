@@ -78,24 +78,33 @@ def display_spot_forecast(spot_forecast):
 
 def handle_search(search: str, verbose=False):
     """Displays a list of search results from the users query."""
-    print("\nSelect a spot:")
     search_results = search_surfline(search)[0]["hits"]["hits"]
     # print out the search results
-    for i, search_result in enumerate(search_results):
-        breadcrumbs = search_result.get("_source").get("breadCrumbs")
+    if len(search_results) == 0:
+        return print(f"No spots found for {search}")
+    if len(search_results) == 1:
+        breadcrumbs = search_results[0].get("_source").get("breadCrumbs")
         breadcrumb_string = " > ".join(breadcrumbs)
-        name = search_result.get("_source").get("name")
-        type = search_result.get("_type")
-        id = search_result.get("_id")
-        if verbose:
-            print(f"{i + 1}. {breadcrumb_string} > {name} ({type}) [ID: {id}]")
-        else:
-            print(f"{i + 1}. {breadcrumb_string} > {name}")
-    print("0. Back to Main Menu")
-    # get the selection from the user, maybe add modify search option
-    # store and return the selected ID to pass on to application and get forecast
-    choice = get_user_choice(search_results)
-    spot_id = search_results[choice - 1].get("_id")
+        name = search_results[0].get("_source").get("name")
+        type = search_results[0].get("_type")
+        spot_id = search_results[0].get("_id")
+    else:
+        print("\nSelect a spot:")
+        for i, search_result in enumerate(search_results):
+            breadcrumbs = search_result.get("_source").get("breadCrumbs")
+            breadcrumb_string = " > ".join(breadcrumbs)
+            name = search_result.get("_source").get("name")
+            type = search_result.get("_type")
+            id = search_result.get("_id")
+            if verbose:
+                print(f"{i + 1}. {breadcrumb_string} > {name} ({type}) [ID: {id}]")
+            else:
+                print(f"{i + 1}. {breadcrumb_string} > {name}")
+        print("0. Back to Main Menu")
+        # get the selection from the user, maybe add modify search option
+        # store and return the selected ID to pass on to application and get forecast
+        choice = get_user_choice(search_results)
+        spot_id = search_results[choice - 1].get("_id")
 
     spot_forecast = get_spot_forecast(spot_id)
 
