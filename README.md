@@ -37,6 +37,18 @@ For contributions, install the package with development dependencies using:
 pip install -e ".[dev]"
 ```
 
+## Usage
+
+Run `surfreport` to open menu off all regions. When selecting a subregion an overview will be displayed if available.
+
+### Search for a spot
+
+```sh
+surfreport -s <spot query>
+```
+
+Replace `<spot query>` with the surf spot you with to get the forecast for. If there are multiple matches it will ask you to choose appropriate match.
+
 ## Roadmap
 
 - **CLI Enhancements**: Currently, the focus is on building out the CLI usage and adding more data sources to ensure comprehensive surf report retrieval.
