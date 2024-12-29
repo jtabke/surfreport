@@ -30,7 +30,11 @@ def display_regions(regions, verbose=False):
     print("\nSelect a Region:")
     for i, region in enumerate(regions):
         if verbose:
-            print(f"{i + 1}. {region['name']} ({region['type']}) [ID: {region['_id']}]")
+            subregion = region.get("subregion", "Not specified")
+            spot = region.get("spot", "Not specified")
+            print(
+                f"{i + 1}. {region['name']} ({region['type']}) [ID: {region['_id']}] [subregionID: {subregion}] [spotID: {spot}]"
+            )
         else:
             print(f"{i + 1}.  {region['name']} ({region['type']})")
     print("0. Back to Main Menu")
