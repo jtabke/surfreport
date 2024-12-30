@@ -6,6 +6,7 @@ BASE_URL = "https://services.surfline.com/taxonomy"
 OVERVIEW_URL = "https://services.surfline.com/kbyg/regions/overview"
 SEARCH_URL = "https://services.surfline.com/search/site"
 SPOT_FORECAST_URL = "https://services.surfline.com/kbyg/spots/forecasts/conditions"
+KBYG_URL = "https://services.surfline.com/kbyg/spots/forecasts"
 
 
 class RegionOverviewError(Exception):
@@ -112,6 +113,26 @@ def get_spot_forecast(spot_id: str, days: int = 5) -> dict:
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching spot forecast for spot ID {spot_id}: {e}")
         raise SpotForecastError("Failed to fetch spot forecast") from e
+
+
+def get_spot_report(spot_id: str, days: int = 3) -> dict:
+    endpoints = [
+        "/wave",
+        "/weather",
+        "/tides",
+        "/surf",
+        "/sunlight",
+        "/wind",
+        "/swells",
+    ]
+    params = {"spotId": spot_id, "days": days, "intervalHours": 24}
+    try:
+        response = requests.get(KBYG_URL + "/surf", params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching spot report for spot ID {spot_id}: {e}")
+        raise SpotForecastError("Failed to fetch spot report") from e
 
 
 if __name__ == "__main__":

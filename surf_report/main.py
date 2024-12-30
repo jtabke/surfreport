@@ -4,9 +4,14 @@ from surf_report.data.surfline import (
     get_region_list,
     get_region_overview,
     get_spot_forecast,
+    get_spot_report,
     search_surfline,
 )
-from surf_report.utils.helpers import parse_arguments, sort_regions
+from surf_report.utils.helpers import (
+    convert_timestamp_to_datetime,
+    parse_arguments,
+    sort_regions,
+)
 
 # Constants
 LOG_LEVEL = logging.NOTSET
@@ -76,6 +81,20 @@ def display_spot_forecast(spot_forecast):
             print(f"* {forecast.get("observation", "No observation found.")}")
 
 
+def display_spot_report(spot_report):
+    """Displays spot surf report"""
+    waves = spot_report.get("data", {}).get("surf", {})
+    print("\nSurf Report:")
+    if waves:
+        for wave in waves:
+            report_date = convert_timestamp_to_datetime(
+                wave.get("timestamp"), wave.get("utcOffset")
+            )
+            print(f"\n{report_date}")
+            print(f"{wave.get("surf").get("min")} - {wave.get("surf").get("max")} FT")
+            print(f"{wave.get("surf").get("humanRelation")}")
+
+
 def handle_search(search: str, verbose=False):
     """Displays a list of search results from the users query."""
     search_results = search_surfline(search)[0]["hits"]["hits"]
@@ -107,8 +126,9 @@ def handle_search(search: str, verbose=False):
         spot_id = search_results[choice - 1].get("_id")
 
     spot_forecast = get_spot_forecast(spot_id)
+    spot_report = get_spot_report(spot_id)
 
-    return display_spot_forecast(spot_forecast)
+    return display_spot_forecast(spot_forecast), display_spot_report(spot_report)
 
 
 def main():
