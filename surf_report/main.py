@@ -62,11 +62,7 @@ def display_region_overview(region_overview):
     if highlights:
         for highlight in highlights:
             print(f"* {highlight}")
-        print(
-            region_overview.get("data", {})
-            .get("forecastSummary", {})
-            .get("shortTermForecast", "No short term forecast available.")
-        )
+        print(region_overview.get("data", {}).get("forecastSummary", {}))
 
 
 def display_spot_forecast(spot_forecast):
