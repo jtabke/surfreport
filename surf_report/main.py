@@ -107,6 +107,10 @@ def handle_search(search: str, verbose=False):
         name = search_results[0].get("_source").get("name")
         type = search_results[0].get("_type")
         spot_id = search_results[0].get("_id")
+        if verbose:
+            print(f"{breadcrumb_string} > {name} ({type}) [ID: {spot_id}]")
+        else:
+            print(f"{breadcrumb_string} > {name}")
     else:
         print("\nSelect a spot:")
         for i, search_result in enumerate(search_results):
@@ -123,7 +127,16 @@ def handle_search(search: str, verbose=False):
         # get the selection from the user, maybe add modify search option
         # store and return the selected ID to pass on to application and get forecast
         choice = get_user_choice(search_results)
+        # TODO: put the breadcrumbs printing into a function
+        breadcrumbs = search_results[choice - 1].get("_source").get("breadCrumbs")
+        breadcrumb_string = " > ".join(breadcrumbs)
+        name = search_results[choice - 1].get("_source").get("name")
+        type = search_results[choice - 1].get("_type")
         spot_id = search_results[choice - 1].get("_id")
+        if verbose:
+            print(f"\n{breadcrumb_string} > {name} ({type}) [ID: {spot_id}]")
+        else:
+            print(f"\n{breadcrumb_string} > {name}")
 
     spot_forecast = get_spot_forecast(spot_id)
     spot_report = get_spot_report(spot_id)
