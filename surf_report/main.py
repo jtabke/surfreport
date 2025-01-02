@@ -76,7 +76,8 @@ def display_spot_forecast(spot_forecast):
     print("\nSpot Forecast:")
     if conditions:
         for forecast in conditions:
-            print(f"\n{forecast.get("forecastDay", "forecastDay not found.")}")
+            forecast_day = forecast.get("forecastDay", "forecastDay not found.")
+            print(f"\n{forecast_day}")
             print(f"* {forecast.get("headline", "No headline found.")}")
             print(f"* {forecast.get("observation", "No observation found.")}")
 
@@ -138,17 +139,19 @@ def handle_search(search: str, verbose=False):
         else:
             print(f"\n{breadcrumb_string}")
 
-    spot_forecast = get_spot_forecast(spot_id)
-    spot_report = get_spot_report(spot_id)
-
-    return display_spot_forecast(spot_forecast), display_spot_report(spot_report)
+    return spot_id
 
 
 def main():
     args = parse_arguments()
 
     if args.search:
-        handle_search(args.search_string)
+        spot_id = handle_search(args.search_string)
+        if spot_id is not None:
+            spot_forecast = get_spot_forecast(spot_id)
+            spot_report = get_spot_report(spot_id)
+            display_spot_forecast(spot_forecast)
+            display_spot_report(spot_report)
     else:
         current_region_id = "58f7ed51dadb30820bb38782"
         while True:
