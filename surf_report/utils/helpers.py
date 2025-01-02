@@ -42,6 +42,6 @@ def convert_timestamp_to_datetime(timestamp, utc_offset):
     local_dt = dt.astimezone(timezone(timedelta(hours=utc_offset)))
 
     # Format the datetime object as a string
-    datetime_str = local_dt.strftime("%Y-%m-%d %H:%M:%S")
+    datetime_str = local_dt.strftime("%a %Y-%m-%d %H:%M:%S")
 
     return datetime_str
