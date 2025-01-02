@@ -115,7 +115,7 @@ def get_spot_forecast(spot_id: str, days: int = 5) -> dict:
         raise SpotForecastError("Failed to fetch spot forecast") from e
 
 
-def get_spot_report(spot_id: str, days: int = 3) -> dict:
+def get_spot_report(spot_id: str, days: int = 3, intervalHours: int = 24) -> dict:
     endpoints = [
         "/wave",
         "/weather",
@@ -125,7 +125,7 @@ def get_spot_report(spot_id: str, days: int = 3) -> dict:
         "/wind",
         "/swells",
     ]
-    params = {"spotId": spot_id, "days": days, "intervalHours": 24}
+    params = {"spotId": spot_id, "days": days, "intervalHours": intervalHours}
     try:
         response = requests.get(KBYG_URL + "/surf", params=params)
         response.raise_for_status()
