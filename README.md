@@ -12,7 +12,7 @@
 
 # surfreport
 
-**surfreport** is a Python package that allows you to retrieve surf reports directly from the terminal. It fetches data from surf report APIs, providing a command-line interface (CLI) for easy access to current and forecasted surf conditions.
+`surfreport` is a Python package that allows you to retrieve surf reports directly from the terminal. It fetches data from surf report APIs, providing a command-line interface (CLI) for easy access to current and forecasted surf conditions.
 
 ## Installation
 
@@ -39,7 +39,7 @@ pip install -e ".[dev]"
 
 ## Usage
 
-Run `surfreport` to open menu off all regions. When selecting a subregion an overview will be displayed if available.
+Run `surfreport` to access a menu of all regions. Selecting a subregion or spot will display an overview and surf report if available.
 
 ### Search for a spot
 
