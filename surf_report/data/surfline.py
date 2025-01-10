@@ -126,13 +126,18 @@ def get_spot_report(spot_id: str, days: int = 3, intervalHours: int = 24) -> dic
         "/swells",
     ]
     params = {"spotId": spot_id, "days": days, "intervalHours": intervalHours}
-    try:
-        response = requests.get(KBYG_URL + "/surf", params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching spot report for spot ID {spot_id}: {e}")
-        raise SpotForecastError("Failed to fetch spot report") from e
+    surf_report = {}  # Dictionary to hold data from all endpoints
+    for endpoint in endpoints:
+        try:
+            response = requests.get(KBYG_URL + endpoint, params=params)
+            response.raise_for_status()
+            surf_report[endpoint[1:]] = (
+                response.json()
+            )  # Remove the leadinng '/' from the endpoint name
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching spot report for spot ID {spot_id}: {e}")
+            surf_report[endpoint[1:]] = None  # Store None if the request fails
+    return surf_report
 
 
 if __name__ == "__main__":
