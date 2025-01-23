@@ -300,8 +300,8 @@ def main():
     if args.search:
         spot_id = handle_search(args.search_string)
         if spot_id is not None:
-            spot_forecast = get_spot_forecast(spot_id)
-            spot_report = get_spot_report(spot_id)
+            spot_forecast = get_spot_forecast(spot_id, args.days)
+            spot_report = get_spot_report(spot_id, args.days)
             display_spot_forecast(spot_forecast)
             display_spot_report(spot_report)
     else:

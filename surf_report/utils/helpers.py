@@ -16,6 +16,13 @@ def parse_arguments():
         nargs="?",
         help="An optional string value passed from the CLI",
     )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=3,
+        nargs="?",
+        help="Number of days to get surf report for.",
+    )
     return parser.parse_args()
 
 
