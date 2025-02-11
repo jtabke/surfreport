@@ -1,12 +1,4 @@
-import logging
-
-from surf_report.data.surfline import (
-    get_region_list,
-    get_region_overview,
-    get_spot_forecast,
-    get_spot_report,
-    search_surfline,
-)
+from surf_report.providers.surfline import SurflineAPI
 from surf_report.ui import (
     display_region_overview,
     display_regions,
@@ -18,27 +10,15 @@ from surf_report.utils.helpers import (
     parse_arguments,
     sort_regions,
 )
+from surf_report.utils.logger import setup_logger
 
-# Constants
-LOG_LEVEL = logging.NOTSET
-LOG_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-LOG_FILE = "error.log"
-LOG_FILE_MODE = "a"
-
-# Logger configuration
-logging.basicConfig(
-    level=LOG_LEVEL,
-    format=LOG_FORMAT,
-    datefmt=LOG_DATE_FORMAT,
-    filename=LOG_FILE,
-    filemode=LOG_FILE_MODE,
-)
+logger = setup_logger()
+surfline = SurflineAPI()
 
 
 def handle_search(search: str, verbose=False):
     """Displays a list of search results from the users query."""
-    search_results = search_surfline(search)[0]["hits"]["hits"]
+    search_results = surfline.search_surfline(search)[0]["hits"]["hits"]
 
     def _join_breadcrumbs(search_result):
         breadcrumbs = search_result.get("_source").get("breadCrumbs")
@@ -88,14 +68,14 @@ def main():
     if args.search:
         spot_id = handle_search(args.search_string)
         if spot_id is not None:
-            spot_forecast = get_spot_forecast(spot_id, args.days)
-            spot_report = get_spot_report(spot_id, args.days)
+            spot_forecast = surfline.get_spot_forecast(spot_id, args.days)
+            spot_report = surfline.get_spot_report(spot_id, args.days)
             display_spot_forecast(spot_forecast)
             display_spot_report(spot_report)
     else:
         current_region_id = "58f7ed51dadb30820bb38782"
         while True:
-            region_data = get_region_list(current_region_id)
+            region_data = surfline.get_region_list(current_region_id)
             if region_data is not None:
                 regions = sort_regions(region_data.get("contains", []))
                 display_regions(regions, args.verbose)
@@ -108,14 +88,16 @@ def main():
                 else:
                     current_region = regions[choice - 1]
                     if current_region["type"] == "subregion":
-                        region_overview = get_region_overview(
+                        region_overview = surfline.get_region_overview(
                             current_region["subregion"]
                         )
                         if region_overview is not None:
                             display_region_overview(region_overview)
                     current_region_id = current_region["_id"]
                     if current_region["type"] == "spot":
-                        spot_forecast = get_spot_forecast(current_region["spot"])
+                        spot_forecast = surfline.get_spot_forecast(
+                            current_region["spot"]
+                        )
                         if spot_forecast is not None:
                             display_spot_forecast(spot_forecast)
             else:
