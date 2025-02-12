@@ -7,14 +7,28 @@ def display_regions(regions, verbose=False):
     """Displays a list of regions to the user."""
     print("\nSelect a Region:")
     for i, region in enumerate(regions):
-        if verbose:
+        if isinstance(region, dict):
+            # Support legacy dictionary format
+            name = region.get("name", "Unknown")
+            region_type = region.get("type", "Unknown")
             subregion = region.get("subregion", "Not specified")
             spot = region.get("spot", "Not specified")
+            region_id = region.get("_id", "Unknown")
+        else:
+            # Use the new `Region` dataclass format
+            name = region.name
+            region_type = region.type
+            subregion = region.subregion or "Not specified"
+            spot = region.spot or "Not specified"
+            region_id = region.id
+
+        if verbose:
             print(
-                f"{i + 1}. {region['name']} ({region['type']}) [ID: {region['_id']}] [subregionID: {subregion}] [spotID: {spot}]"
+                f"{i + 1}. {name} ({region_type}) [ID: {region_id}] [subregionID: {subregion}] [spotID: {spot}]"
             )
         else:
-            print(f"{i + 1}.  {region['name']} ({region['type']})")
+            print(f"{i + 1}. {name} ({region_type})")
+
     print("0. Back to Main Menu")
 
 
@@ -44,19 +58,36 @@ def display_region_overview(region_overview):
 
 
 def display_spot_forecast(spot_forecast):
-    """Displays spot forecast observations"""
-    conditions = spot_forecast.get("data", {}).get("conditions", {})
+    """Displays spot forecast observations."""
+    if spot_forecast is None:
+        print("\nNo forecast data available.")
+        return
+
+    # Correctly access the `forecast_data` attribute
+    forecast_data = spot_forecast.forecast_data  # This is now a dictionary
+
+    # Extract conditions safely
+    conditions = forecast_data.get("data", {}).get("conditions", {})
+
     print("\nSpot Forecast:")
     if conditions:
         for forecast in conditions:
-            forecast_day = forecast.get("forecastDay", "forecastDay not found.")
+            forecast_day = forecast.get("forecastDay", "Forecast day not found.")
             print(f"\n{forecast_day}")
-            print(f"* {forecast.get("headline", "No headline found.")}")
-            print(f"* {forecast.get("observation", "No observation found.")}")
+            print(f"* {forecast.get('headline', 'No headline found.')}")
+            print(f"* {forecast.get('observation', 'No observation found.')}")
+    else:
+        print("No conditions data available.")
 
 
 def display_spot_report(spot_report):
     """Displays spot report grouped by day for all endpoints."""
+    if spot_report is None:
+        print("\nNo spot report available.")
+        return
+
+    # Correctly access the `report_data` attribute
+    spot_report = spot_report.report_data
     # Step 1: Extract data from all endpoints
     wave_data = spot_report.get("wave", {}).get("data", {}).get("wave", [])
     weather_data = spot_report.get("weather", {}).get("data", []).get("weather", [])

@@ -28,7 +28,7 @@ def parse_arguments():
 
 def sort_regions(regions):
     """Sort list of regions alphabetically."""
-    return sorted(regions, key=lambda x: x.get("name", "").lower())
+    return sorted(regions, key=lambda x: x.name.lower() if hasattr(x, "name") else "")
 
 
 def convert_timestamp_to_datetime(timestamp, utc_offset):
