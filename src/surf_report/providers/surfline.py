@@ -1,6 +1,6 @@
-import logging
-
 import requests
+
+from surf_report.utils.logger import logger  # Import the centralized logger
 
 BASE_URL = "https://services.surfline.com/taxonomy"
 OVERVIEW_URL = "https://services.surfline.com/kbyg/regions/overview"
@@ -29,7 +29,7 @@ class SpotForecastError(Exception):
 
 class SurflineAPI:
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        logger.info("Initializing SurflineAPI")  # This should log to console
 
     def search_surfline(self, query) -> list[dict]:
         """
@@ -51,7 +51,7 @@ class SurflineAPI:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(f"Error fetching search data: {e}")
+            logger.error(f"Error fetching search data: {e}")
             raise Exception("Failed to fetch search data") from e
 
     def get_region_list(self, taxonomy_id, max_depth=0) -> dict:
@@ -71,7 +71,7 @@ class SurflineAPI:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(
+            logger.error(
                 f"Error fetching taxonomy data for taxonomy ID {taxonomy_id}: {e}"
             )
             raise TaxonomyError("Failed to fetch taxonomy data") from e
@@ -92,7 +92,7 @@ class SurflineAPI:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(
+            logger.error(
                 f"Error fetching region overview for region ID {region_id}: {e}"
             )
             raise RegionOverviewError("Failed to fetch region overview") from e
@@ -114,7 +114,7 @@ class SurflineAPI:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(f"Error fetching spot forecast for spot ID {spot_id}: {e}")
+            logger.error(f"Error fetching spot forecast for spot ID {spot_id}: {e}")
             raise SpotForecastError("Failed to fetch spot forecast") from e
 
     def get_spot_report(
@@ -139,7 +139,7 @@ class SurflineAPI:
                     response.json()
                 )  # Remove the leadinng '/' from the endpoint name
             except requests.exceptions.RequestException as e:
-                logging.error(f"Error fetching spot report for spot ID {spot_id}: {e}")
+                logger.error(f"Error fetching spot report for spot ID {spot_id}: {e}")
                 surf_report[endpoint[1:]] = None  # Store None if the request fails
         return surf_report
 
@@ -150,12 +150,12 @@ if __name__ == "__main__":
     try:
         print(api.get_region_list(earth_id))
     except TaxonomyError as e:
-        logging.error(f"Taxonomy error: {e}")
+        logger.error(f"Taxonomy error: {e}")
         print(f"Error: {e}")
 
     la_subregion_id = "58581a836630e24c4487900b"
     try:
         print(api.get_region_overview(la_subregion_id))
     except RegionOverviewError as e:
-        logging.error(f"Region overview error: {e}")
+        logger.error(f"Region overview error: {e}")
         print(f"Error: {e}")
