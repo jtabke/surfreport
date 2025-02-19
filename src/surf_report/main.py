@@ -1,4 +1,4 @@
-from surf_report.providers.surfline import SurflineAPI
+from surf_report.providers.surfline.surfline import SurflineAPI
 from surf_report.ui import (
     display_region_overview,
     display_regions,
@@ -20,7 +20,7 @@ def handle_search(search: str, verbose=False):
     """Displays a list of search results from the user's query."""
     search_results = surfline.search_surfline(
         search
-    )  # Now returns a list of SurflineSearchResult objects
+    )  # Returns a list of SurflineSearchResult objects
 
     if not search_results:
         print(f"No spots found for {search}")
