@@ -27,7 +27,8 @@ class SurflineAPI:
     def _get(self, url: str, params: dict) -> Optional[dict]:
         """A generic GET request handler."""
         try:
-            logger.debug(f"Requesting {url} with params {params}")
+            full_url = requests.Request("GET", url, params=params).prepare().url
+            logger.debug(f"Requesting {full_url}")
             response = requests.get(url, params=params)
             response.raise_for_status()
             logger.info(f"Successful API response from {url}")
