@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict
 
 from surf_report.utils.helpers import convert_timestamp_to_datetime
@@ -43,6 +44,9 @@ def get_user_choice(regions):
                 print("Invalid choice. Please select a valid option.")
         except ValueError:
             print("Invalid input. Please enter a number.")
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            sys.exit(0)
 
 
 def display_region_overview(region_overview):
