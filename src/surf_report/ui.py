@@ -233,7 +233,9 @@ def display_spot_report(spot_report):
         if data["swells"]:
             print("Swells:")
             # We are going to not include the first midnight data point
-            for swell in data["swells"][1:]:
+            for swell in data["swells"]:
+                if swell.get("time") == "00:00:00":
+                    continue
                 print(
                     f"  [{swell.get("time")}] Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
@@ -251,7 +253,9 @@ def display_spot_report(spot_report):
         if data["tides"]:
             print("Tides:")
             for tide in data["tides"]:
-                print(f"  Height: {tide.get('height')} FT, Type: {tide.get('type')}")
+                print(
+                    f"  [{tide.get("time")}] Height: {tide.get('height')} FT, Type: {tide.get('type')}"
+                )
 
         # Display wind data
         if data["wind"]:
@@ -446,7 +450,9 @@ def display_combined_spot_report(spot_forecast, spot_report):
         if data["swells"]:
             print("Swells:")
             # We are going to not include the first midnight data point
-            for swell in data["swells"][1:]:
+            for swell in data["swells"]:
+                if swell.get("time") == "00:00:00":
+                    continue
                 print(
                     f"  [{swell.get("time")}] Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
@@ -464,7 +470,9 @@ def display_combined_spot_report(spot_forecast, spot_report):
         if data["tides"]:
             print("Tides:")
             for tide in data["tides"]:
-                print(f"  Height: {tide.get('height')} FT, Type: {tide.get('type')}")
+                print(
+                    f"  [{tide.get("time")}] Height: {tide.get('height')} FT, Type: {tide.get('type')}"
+                )
 
         # Display wind data
         if data["wind"]:
