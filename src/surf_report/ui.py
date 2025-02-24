@@ -108,61 +108,57 @@ def display_spot_report(spot_report):
         }
     )
 
-    # Group wave data
+    # Group wave data for surf
     for wave in wave_data:
         timestamp = wave.get("timestamp")
         utc_offset = wave.get("utcOffset")
-        if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date (e.g., "2024-01-10")
-            grouped_data[date_str]["surf"].append(wave.get("surf"))
-
-    # Group wave data
-    for swell in swells_data:
-        timestamp = swell.get("timestamp")
-        utc_offset = swell.get("utcOffset")
-        if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date (e.g., "2024-01-10")
-            grouped_data[date_str]["swells"].extend(swell.get("swells", []))
+        if timestamp:
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
+            if wave.get("surf"):
+                # Optionally add time to the surf data if you want to show it
+                surf = wave.get("surf")
+                surf["time"] = time_str
+                grouped_data[day]["surf"].append(surf)
+            # For each swell, attach the time from the parent wave object
+            for swell in wave.get("swells", []):
+                swell["time"] = time_str
+            grouped_data[day]["swells"].extend(wave.get("swells", []))
 
     # Group weather data
     for weather in weather_data:
         timestamp = weather.get("timestamp")
         utc_offset = weather.get("utcOffset")
-        if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date
-            grouped_data[date_str]["weather"].append(
+        if timestamp:
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
+            grouped_data[day]["weather"].append(
                 {
+                    "time": time_str,
                     "temperature": weather.get("temperature"),
                     "condition": weather.get("condition"),
                 }
             )
 
-    # Group tides data
+    # Group tides data (only HIGH and LOW tides)
     for tide in tides_data:
         timestamp = tide.get("timestamp")
         utc_offset = tide.get("utcOffset")
         tide_type = tide.get("type")
-        if timestamp is not None and tide_type in [
-            "HIGH",
-            "LOW",
-        ]:  # Only include HIGH and LOW tides
-            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+        if timestamp and tide_type in ["HIGH", "LOW"]:
+            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
-            ]  # Extract date
+            ]  # Extract date (e.g., "2024-01-10")
             time_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 2
             ]  # Extract time (e.g., "12:34:56")
-            grouped_data[date_str]["tides"].append(
+            grouped_data[day]["tides"].append(
                 {
                     "height": tide.get("height"),
-                    "type": tide_type,  # e.g., high tide, low tide
-                    "time": time_str,  # e.g., high tide, low tide
+                    "type": tide_type,
+                    "time": time_str,
                 }
             )
 
@@ -170,12 +166,13 @@ def display_spot_report(spot_report):
     for wind in wind_data:
         timestamp = wind.get("timestamp")
         utc_offset = wind.get("utcOffset")
-        if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date
-            grouped_data[date_str]["wind"].append(
+        if timestamp:
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
+            grouped_data[day]["wind"].append(
                 {
+                    "time": time_str,
                     "speed": wind.get("speed"),
                     "direction": wind.get("direction"),
                     "directionType": wind.get("directionType"),
@@ -225,7 +222,7 @@ def display_spot_report(spot_report):
             # We are going to not include the first midnight data point
             for surf in data["surf"][1:]:
                 print(
-                    f"  Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
+                    f"  [{surf.get("time")}] Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
                 )
 
         # Display swells data
@@ -234,7 +231,7 @@ def display_spot_report(spot_report):
             # We are going to not include the first midnight data point
             for swell in data["swells"][1:]:
                 print(
-                    f"  Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
+                    f"  [{swell.get("time")}] Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
 
         # Display weather data
@@ -243,7 +240,7 @@ def display_spot_report(spot_report):
             # We are going to not include the first midnight data point
             for weather in data["weather"][1:]:
                 print(
-                    f"  Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
+                    f"  [{weather.get("time")}] Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
                 )
 
         # Display tides data
@@ -258,11 +255,10 @@ def display_spot_report(spot_report):
             # We are going to not include the first midnight data point
             for wind in data["wind"][1:]:
                 print(
-                    f"  Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
+                    f"  [{wind.get('time')}] Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
                 )
-
-        # Display sunlight data
-        if data["sunlight"]:
+        # Display detailed sunlight data
+        if data.get("sunlight"):
             print("Sunlight:")
             for sunlight in data["sunlight"]:
                 print(
@@ -322,10 +318,17 @@ def display_combined_spot_report(spot_forecast, spot_report):
         timestamp = wave.get("timestamp")
         utc_offset = wave.get("utcOffset")
         if timestamp:
-            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date (e.g., "2024-01-10")
-            grouped_data[day]["surf"].append(wave.get("surf"))
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
+            if wave.get("surf"):
+                # Optionally add time to the surf data if you want to show it
+                surf = wave.get("surf")
+                surf["time"] = time_str
+                grouped_data[day]["surf"].append(surf)
+            # For each swell, attach the time from the parent wave object
+            for swell in wave.get("swells", []):
+                swell["time"] = time_str
             grouped_data[day]["swells"].extend(wave.get("swells", []))
 
     # Group weather data
@@ -333,11 +336,12 @@ def display_combined_spot_report(spot_forecast, spot_report):
         timestamp = weather.get("timestamp")
         utc_offset = weather.get("utcOffset")
         if timestamp:
-            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date (e.g., "2024-01-10")
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
             grouped_data[day]["weather"].append(
                 {
+                    "time": time_str,
                     "temperature": weather.get("temperature"),
                     "condition": weather.get("condition"),
                 }
@@ -368,11 +372,12 @@ def display_combined_spot_report(spot_forecast, spot_report):
         timestamp = wind.get("timestamp")
         utc_offset = wind.get("utcOffset")
         if timestamp:
-            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
-                1
-            ]  # Extract date (e.g., "2024-01-10")
+            date_parts = convert_timestamp_to_datetime(timestamp, utc_offset).split()
+            day = date_parts[1]  # Extract date (e.g., "2024-01-10")
+            time_str = date_parts[2]  # Extract date (e.g., "12:34:56")
             grouped_data[day]["wind"].append(
                 {
+                    "time": time_str,
                     "speed": wind.get("speed"),
                     "direction": wind.get("direction"),
                     "directionType": wind.get("directionType"),
@@ -430,7 +435,7 @@ def display_combined_spot_report(spot_forecast, spot_report):
             # We are going to not include the first midnight data point
             for surf in data["surf"][1:]:
                 print(
-                    f"  Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
+                    f"  [{surf.get("time")}] Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
                 )
 
         # Display swells data
@@ -439,7 +444,7 @@ def display_combined_spot_report(spot_forecast, spot_report):
             # We are going to not include the first midnight data point
             for swell in data["swells"][1:]:
                 print(
-                    f"  Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
+                    f"  [{swell.get("time")}] Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
 
         # Display weather data
@@ -448,7 +453,7 @@ def display_combined_spot_report(spot_forecast, spot_report):
             # We are going to not include the first midnight data point
             for weather in data["weather"][1:]:
                 print(
-                    f"  Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
+                    f"  [{weather.get("time")}] Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
                 )
 
         # Display tides data
@@ -463,7 +468,7 @@ def display_combined_spot_report(spot_forecast, spot_report):
             # We are going to not include the first midnight data point
             for wind in data["wind"][1:]:
                 print(
-                    f"  Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
+                    f"  [{wind.get('time')}] Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
                 )
         # Display detailed sunlight data
         if data.get("sunlight"):
