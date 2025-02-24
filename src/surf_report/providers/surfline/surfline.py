@@ -104,7 +104,7 @@ class SurflineAPI:
         return None
 
     def get_spot_report(
-        self, spot_id: str, days: int = 3, interval_hours: int = 24
+        self, spot_id: str, days: int = 3, interval_hours: int = 6
     ) -> Optional[SpotReport]:
         """
         Fetch and return a structured spot report by iterating over several endpoints.

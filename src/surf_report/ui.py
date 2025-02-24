@@ -222,7 +222,8 @@ def display_spot_report(spot_report):
         # Display surf data
         if data["surf"]:
             print("Surf:")
-            for surf in data["surf"]:
+            # We are going to not include the first midnight data point
+            for surf in data["surf"][1:]:
                 print(
                     f"  Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
                 )
@@ -230,7 +231,8 @@ def display_spot_report(spot_report):
         # Display swells data
         if data["swells"]:
             print("Swells:")
-            for swell in data["swells"]:
+            # We are going to not include the first midnight data point
+            for swell in data["swells"][1:]:
                 print(
                     f"  Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
@@ -238,7 +240,8 @@ def display_spot_report(spot_report):
         # Display weather data
         if data["weather"]:
             print("Weather:")
-            for weather in data["weather"]:
+            # We are going to not include the first midnight data point
+            for weather in data["weather"][1:]:
                 print(
                     f"  Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
                 )
@@ -252,7 +255,8 @@ def display_spot_report(spot_report):
         # Display wind data
         if data["wind"]:
             print("Wind:")
-            for wind in data["wind"]:
+            # We are going to not include the first midnight data point
+            for wind in data["wind"][1:]:
                 print(
                     f"  Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
                 )
@@ -420,39 +424,44 @@ def display_combined_spot_report(spot_forecast, spot_report):
         print("-" * 30)
         data = grouped_data.get(day, {})
 
-        # Display detailed surf data
-        if data.get("surf"):
+        # Display surf data
+        if data["surf"]:
             print("Surf:")
-            for surf in data["surf"]:
-                if surf:
-                    print(
-                        f"  Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
-                    )
-        # Display detailed swells data
-        if data.get("swells"):
+            # We are going to not include the first midnight data point
+            for surf in data["surf"][1:]:
+                print(
+                    f"  Min: {surf.get('min')} FT, Max: {surf.get('max')} FT, Condition: {surf.get('humanRelation')}"
+                )
+
+        # Display swells data
+        if data["swells"]:
             print("Swells:")
-            for swell in data["swells"]:
+            # We are going to not include the first midnight data point
+            for swell in data["swells"][1:]:
                 print(
                     f"  Height: {swell.get('height')} FT, Direction: {swell.get('direction')}°, Power: {swell.get('power')}"
                 )
-        # Display detailed weather data
-        if data.get("weather"):
+
+        # Display weather data
+        if data["weather"]:
             print("Weather:")
-            for weather in data["weather"]:
+            # We are going to not include the first midnight data point
+            for weather in data["weather"][1:]:
                 print(
                     f"  Temperature: {weather.get('temperature')}°F, Condition: {weather.get('condition')}"
                 )
-        # Display detailed tides data
-        if data.get("tides"):
+
+        # Display tides data
+        if data["tides"]:
             print("Tides:")
             for tide in data["tides"]:
-                print(
-                    f"  Height: {tide.get('height')} FT, Type: {tide.get('type')}, Time: {tide.get('time')}"
-                )
-        # Display detailed wind data
-        if data.get("wind"):
+                print(f"  Height: {tide.get('height')} FT, Type: {tide.get('type')}")
+
+        # Display wind data
+        if data["wind"]:
             print("Wind:")
-            for wind in data["wind"]:
+            # We are going to not include the first midnight data point
+            for wind in data["wind"][1:]:
                 print(
                     f"  Speed: {wind.get('speed')} KTS, Direction: {wind.get('direction')}° {wind.get('directionType')}"
                 )
