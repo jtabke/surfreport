@@ -1,9 +1,9 @@
 from surf_report.providers.surfline.surfline import SurflineAPI
 from surf_report.ui import (
+    display_combined_spot_report,
     display_region_overview,
     display_regions,
     display_spot_forecast,
-    display_spot_report,
     get_user_choice,
 )
 from surf_report.utils.helpers import (
@@ -69,8 +69,9 @@ def main():
         if spot_id is not None:
             spot_forecast = surfline.get_spot_forecast(spot_id, args.days)
             spot_report = surfline.get_spot_report(spot_id, args.days)
-            display_spot_forecast(spot_forecast)
-            display_spot_report(spot_report)
+            # display_spot_forecast(spot_forecast)
+            # display_spot_report(spot_report)
+            display_combined_spot_report(spot_forecast, spot_report)
     else:
         current_region_id = "58f7ed51dadb30820bb38782"
         while True:
