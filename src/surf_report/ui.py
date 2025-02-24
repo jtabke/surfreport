@@ -2,35 +2,6 @@ from collections import defaultdict
 
 from surf_report.utils.helpers import convert_timestamp_to_datetime
 
-# Define a timezone offset constant if needed
-TIMEZONE_OFFSET = -8
-
-
-def get_date(timestamp):
-    """
-    Converts a Unix timestamp into a date string ("YYYY-MM-DD")
-    using the existing convert_timestamp_to_datetime function.
-    """
-    try:
-        # Example output: "Mon 2025-02-23 12:34:56"
-        datetime_str = convert_timestamp_to_datetime(timestamp, TIMEZONE_OFFSET)
-        parts = (
-            datetime_str.split()
-        )  # parts[0]: weekday, parts[1]: date, parts[2]: time
-        return parts[1] if len(parts) > 1 else "Unknown"
-    except Exception:
-        return "Unknown"
-
-
-def get_time(timestamp):
-    """Helper: converts a timestamp into a time string (HH:MM:SS)."""
-    try:
-        dt_str = convert_timestamp_to_datetime(timestamp, TIMEZONE_OFFSET)
-        parts = dt_str.split()
-        return parts[1] if len(parts) > 1 else "Unknown"
-    except Exception:
-        return "Unknown"
-
 
 def display_regions(regions, verbose=False):
     """Displays a list of regions to the user."""
@@ -140,8 +111,9 @@ def display_spot_report(spot_report):
     # Group wave data
     for wave in wave_data:
         timestamp = wave.get("timestamp")
+        utc_offset = wave.get("utcOffset")
         if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
             ]  # Extract date (e.g., "2024-01-10")
             grouped_data[date_str]["surf"].append(wave.get("surf"))
@@ -149,8 +121,9 @@ def display_spot_report(spot_report):
     # Group wave data
     for swell in swells_data:
         timestamp = swell.get("timestamp")
+        utc_offset = swell.get("utcOffset")
         if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
             ]  # Extract date (e.g., "2024-01-10")
             grouped_data[date_str]["swells"].extend(swell.get("swells", []))
@@ -158,8 +131,9 @@ def display_spot_report(spot_report):
     # Group weather data
     for weather in weather_data:
         timestamp = weather.get("timestamp")
+        utc_offset = weather.get("utcOffset")
         if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
             ]  # Extract date
             grouped_data[date_str]["weather"].append(
@@ -172,15 +146,16 @@ def display_spot_report(spot_report):
     # Group tides data
     for tide in tides_data:
         timestamp = tide.get("timestamp")
+        utc_offset = tide.get("utcOffset")
         tide_type = tide.get("type")
         if timestamp is not None and tide_type in [
             "HIGH",
             "LOW",
         ]:  # Only include HIGH and LOW tides
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
             ]  # Extract date
-            time_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            time_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 2
             ]  # Extract time (e.g., "12:34:56")
             grouped_data[date_str]["tides"].append(
@@ -194,8 +169,9 @@ def display_spot_report(spot_report):
     # Group wind data
     for wind in wind_data:
         timestamp = wind.get("timestamp")
+        utc_offset = wind.get("utcOffset")
         if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
+            date_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
                 1
             ]  # Extract date
             grouped_data[date_str]["wind"].append(
@@ -209,23 +185,27 @@ def display_spot_report(spot_report):
     # Group sunlight data
     for sunlight in sunlight_data:
         timestamp = sunlight.get("sunrise")  # Use sunrise timestamp for grouping by day
+        sunrise_utc_offset = sunlight.get("sunriseUTCOffset")
+        dawn_utc_offset = sunlight.get("dawnUTCOffset")
+        sunset_utc_offset = sunlight.get("sunsetUTCOffset")
+        dusk_utc_offset = sunlight.get("duskUTCOffset")
         if timestamp is not None:
-            date_str = convert_timestamp_to_datetime(timestamp, -8).split()[
-                1
-            ]  # Extract date
+            date_str = convert_timestamp_to_datetime(
+                timestamp, sunrise_utc_offset
+            ).split()[1]  # Extract date
             grouped_data[date_str]["sunlight"].append(
                 {
                     "dawn": convert_timestamp_to_datetime(
-                        sunlight.get("dawn"), -8
+                        sunlight.get("dawn"), dawn_utc_offset
                     ).split()[2],  # Extract time
                     "sunrise": convert_timestamp_to_datetime(
-                        sunlight.get("sunrise"), -8
+                        sunlight.get("sunrise"), sunrise_utc_offset
                     ).split()[2],  # Extract time
                     "sunset": convert_timestamp_to_datetime(
-                        sunlight.get("sunset"), -8
+                        sunlight.get("sunset"), sunset_utc_offset
                     ).split()[2],  # Extract time
                     "dusk": convert_timestamp_to_datetime(
-                        sunlight.get("dusk"), -8
+                        sunlight.get("dusk"), dusk_utc_offset
                     ).split()[2],  # Extract time
                 }
             )
@@ -333,19 +313,25 @@ def display_combined_spot_report(spot_forecast, spot_report):
     swells_data = report_data.get("swells", {}).get("data", {}).get("swells", [])
     sunlight_data = report_data.get("sunlight", {}).get("data", {}).get("sunlight", [])
 
-    # Group wave data (for surf and swells)
+    # Group wave data for surf
     for wave in wave_data:
         timestamp = wave.get("timestamp")
+        utc_offset = wave.get("utcOffset")
         if timestamp:
-            day = get_date(timestamp)
+            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+                1
+            ]  # Extract date (e.g., "2024-01-10")
             grouped_data[day]["surf"].append(wave.get("surf"))
             grouped_data[day]["swells"].extend(wave.get("swells", []))
 
     # Group weather data
     for weather in weather_data:
         timestamp = weather.get("timestamp")
+        utc_offset = weather.get("utcOffset")
         if timestamp:
-            day = get_date(timestamp)
+            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+                1
+            ]  # Extract date (e.g., "2024-01-10")
             grouped_data[day]["weather"].append(
                 {
                     "temperature": weather.get("temperature"),
@@ -356,10 +342,15 @@ def display_combined_spot_report(spot_forecast, spot_report):
     # Group tides data (only HIGH and LOW tides)
     for tide in tides_data:
         timestamp = tide.get("timestamp")
+        utc_offset = tide.get("utcOffset")
         tide_type = tide.get("type")
         if timestamp and tide_type in ["HIGH", "LOW"]:
-            day = get_date(timestamp)
-            time_str = get_time(timestamp)
+            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+                1
+            ]  # Extract date (e.g., "2024-01-10")
+            time_str = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+                2
+            ]  # Extract time (e.g., "12:34:56")
             grouped_data[day]["tides"].append(
                 {
                     "height": tide.get("height"),
@@ -371,8 +362,11 @@ def display_combined_spot_report(spot_forecast, spot_report):
     # Group wind data
     for wind in wind_data:
         timestamp = wind.get("timestamp")
+        utc_offset = wind.get("utcOffset")
         if timestamp:
-            day = get_date(timestamp)
+            day = convert_timestamp_to_datetime(timestamp, utc_offset).split()[
+                1
+            ]  # Extract date (e.g., "2024-01-10")
             grouped_data[day]["wind"].append(
                 {
                     "speed": wind.get("speed"),
@@ -381,17 +375,31 @@ def display_combined_spot_report(spot_forecast, spot_report):
                 }
             )
 
-    # Group sunlight data (using sunrise timestamp for day grouping)
+    # Group sunlight data
     for sunlight in sunlight_data:
-        sunrise_ts = sunlight.get("sunrise")
-        if sunrise_ts:
-            day = get_date(sunrise_ts)
-            grouped_data[day]["sunlight"].append(
+        timestamp = sunlight.get("sunrise")  # Use sunrise timestamp for grouping by day
+        sunrise_utc_offset = sunlight.get("sunriseUTCOffset")
+        dawn_utc_offset = sunlight.get("dawnUTCOffset")
+        sunset_utc_offset = sunlight.get("sunsetUTCOffset")
+        dusk_utc_offset = sunlight.get("duskUTCOffset")
+        if timestamp is not None:
+            date_str = convert_timestamp_to_datetime(
+                timestamp, sunrise_utc_offset
+            ).split()[1]  # Extract date
+            grouped_data[date_str]["sunlight"].append(
                 {
-                    "dawn": get_time(sunlight.get("dawn")),
-                    "sunrise": get_time(sunlight.get("sunrise")),
-                    "sunset": get_time(sunlight.get("sunset")),
-                    "dusk": get_time(sunlight.get("dusk")),
+                    "dawn": convert_timestamp_to_datetime(
+                        sunlight.get("dawn"), dawn_utc_offset
+                    ).split()[2],  # Extract time
+                    "sunrise": convert_timestamp_to_datetime(
+                        sunlight.get("sunrise"), sunrise_utc_offset
+                    ).split()[2],  # Extract time
+                    "sunset": convert_timestamp_to_datetime(
+                        sunlight.get("sunset"), sunset_utc_offset
+                    ).split()[2],  # Extract time
+                    "dusk": convert_timestamp_to_datetime(
+                        sunlight.get("dusk"), dusk_utc_offset
+                    ).split()[2],  # Extract time
                 }
             )
 
