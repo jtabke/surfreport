@@ -46,9 +46,11 @@ def group_spot_report(report_data):
                 surf = wave.get("surf")
                 surf["time"] = time_str
                 grouped_data[day]["surf"].append(surf)
+            # Filter and process swells with height > 0
             for swell in wave.get("swells", []):
-                swell["time"] = time_str
-            grouped_data[day]["swells"].extend(wave.get("swells", []))
+                if swell.get("height", 0) > 0:  # Only include swells with height > 0
+                    swell["time"] = time_str
+                    grouped_data[day]["swells"].append(swell)
 
     # Group weather data
     for weather in weather_data:
