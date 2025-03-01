@@ -1,5 +1,5 @@
 from surf_report.providers.surfline.surfline import SurflineAPI
-from surf_report.ui import (
+from surf_report.providers.surfline.ui import (
     display_combined_spot_report,
     display_region_overview,
     display_regions,

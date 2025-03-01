@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import requests
 
-from surf_report.providers.surfline.surfline_models import (
+from surf_report.providers.surfline.models import (
     Region,
     SpotForecast,
     SpotReport,
