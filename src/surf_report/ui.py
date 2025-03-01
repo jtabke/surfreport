@@ -8,20 +8,11 @@ def display_regions(regions, verbose=False):
     """Displays a list of regions to the user."""
     print("\nSelect a Region:")
     for i, region in enumerate(regions):
-        if isinstance(region, dict):
-            # Support legacy dictionary format
-            name = region.get("name", "Unknown")
-            region_type = region.get("type", "Unknown")
-            subregion = region.get("subregion", "Not specified")
-            spot = region.get("spot", "Not specified")
-            region_id = region.get("_id", "Unknown")
-        else:
-            # Use the new `Region` dataclass format
-            name = region.name
-            region_type = region.type
-            subregion = region.subregion or "Not specified"
-            spot = region.spot or "Not specified"
-            region_id = region.id
+        name = region.name
+        region_type = region.type
+        subregion = region.subregion or "Not specified"
+        spot = region.spot or "Not specified"
+        region_id = region.id
 
         if verbose:
             print(
