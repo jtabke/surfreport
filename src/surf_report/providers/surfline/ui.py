@@ -1,4 +1,5 @@
 import sys
+import textwrap
 
 from surf_report.providers.surfline.processing import (
     group_spot_report,
@@ -169,7 +170,9 @@ def display_spot_report(spot_report, sections=None):
     display_grouped_data_modular(grouped_data, sections)
 
 
-def display_combined_spot_report(spot_forecast, spot_report, sections=None):
+def display_combined_spot_report(
+    spot_forecast, spot_report, sections=None, wrap_width: int = 80
+):
     """
     Displays a combined spot report where for each day the overview forecast
     is shown above the detailed report. The sections parameter allows printing only
@@ -200,8 +203,19 @@ def display_combined_spot_report(spot_forecast, spot_report, sections=None):
         print("=" * 30)
         if day in overview_by_day:
             print("Overview Forecast:")
-            print(f"  Headline: {overview_by_day[day]['headline']}")
-            print(f"  Observation: {overview_by_day[day]['observation']}")
+            # Wrap the headline and observation text
+            wrapped_headline = textwrap.fill(
+                f"Headline: {overview_by_day[day]['headline']}",
+                width=wrap_width,
+                subsequent_indent="  ",
+            )
+            wrapped_observation = textwrap.fill(
+                f"Observation: {overview_by_day[day]['observation']}",
+                width=wrap_width,
+                subsequent_indent="  ",
+            )
+            print(wrapped_headline)
+            print(wrapped_observation)
         else:
             print("No overview forecast available for this day.")
         print("-" * 30)
