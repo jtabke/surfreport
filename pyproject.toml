@@ -28,7 +28,7 @@ repository = "https://github.com/jtabke/surfreport"
 [project.scripts]
 surfreport = "surf_report.main:main"
 
-[tool.ruff]
+[tool.ruff.lint]
 extend-select = ["I"] # Adds import sorting to existing rules
 
 [tool.commitizen]
