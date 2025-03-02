@@ -20,7 +20,7 @@
 
 ```sh
 git clone https://github.com/jtabke/surfreport.git
-cd surf-report
+cd surfreport
 ```
 
 2. Install dependencies:
