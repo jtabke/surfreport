@@ -12,7 +12,6 @@ license = { text = "MIT" }
 readme = "README.md"
 keywords = ["surf", "surf report", "weather", "ocean"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
 ]
@@ -20,13 +19,21 @@ dependencies = ["requests"]
 
 [project.optional-dependencies]
 dev = ["ruff", "pyright"]
+build = ["build", "twine", "commitizen"]
 
 [project.urls]
 homepage = "https://github.com/jtabke/surfreport"
 repository = "https://github.com/jtabke/surfreport"
 
+[project.scripts]
+surfreport = "surf_report.main:main"
+
 [tool.ruff]
 extend-select = ["I"] # Adds import sorting to existing rules
 
-[project.scripts]
-surfreport = "surf_report.main:main"
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.1"
+tag_format = "$version"
+version_files = ["pyproject.toml:version"]
+update_changelog_on_bump = true
