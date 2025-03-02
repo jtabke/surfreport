@@ -33,7 +33,7 @@ def group_spot_report(report_data):
     weather_data = report_data.get("weather", {}).get("data", {}).get("weather", [])
     tides_data = report_data.get("tides", {}).get("data", {}).get("tides", [])
     wind_data = report_data.get("wind", {}).get("data", {}).get("wind", [])
-    swells_data = report_data.get("swells", {}).get("data", {}).get("swells", [])
+    # swells_data = report_data.get("swells", {}).get("data", {}).get("swells", [])
     sunlight_data = report_data.get("sunlight", {}).get("data", {}).get("sunlight", [])
 
     # Group wave data (surf and swells)
@@ -51,6 +51,17 @@ def group_spot_report(report_data):
                 if swell.get("height", 0) > 0:  # Only include swells with height > 0
                     swell["time"] = time_str
                     grouped_data[day]["swells"].append(swell)
+
+    # Unused for now since we get this from the wave endpoint
+    # for swell_item in swells_data:
+    #     timestamp = swell_item.get("timestamp")
+    #     utc_offset = swell_item.get("utcOffset")
+    #     if timestamp:
+    #         day, time_str = extract_day_time(timestamp, utc_offset)
+    #         swells_list = swell_item.get("swells", [])
+    #         for s in swells_list:
+    #             s["time"] = time_str
+    #             grouped_data[day]["swells"].append(s)
 
     # Group weather data
     for weather in weather_data:
