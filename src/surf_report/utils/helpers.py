@@ -18,6 +18,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--days",
+        "-d",
         type=int,
         default=3,
         nargs="?",
