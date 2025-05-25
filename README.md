@@ -29,13 +29,7 @@ cd surfreport
 pip install .
 ```
 
-### Contributing
-
-For contributions, install the package with development dependencies using:
-
-```sh
-pip install -e ".[dev]"
-```
+## [Contributing](./CONTRIBUTING.md)
 
 ## Usage
 
