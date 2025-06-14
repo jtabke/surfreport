@@ -16,6 +16,12 @@
 
 ## Installation
 
+```sh
+pip install surfreport
+```
+
+or from source:
+
 1. Clone this repository:
 
 ```sh
