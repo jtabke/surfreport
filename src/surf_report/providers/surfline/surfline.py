@@ -10,6 +10,7 @@ from surf_report.providers.surfline.models import (
     SurflineSearchResult,
 )
 from surf_report.utils.logger import logger
+from surf_report.utils.user_agent import get_user_agent
 
 
 class Endpoints(Enum):
@@ -20,16 +21,33 @@ class Endpoints(Enum):
     KBYG_BASE = "https://services.surfline.com/kbyg/spots/forecasts"
 
 
+DEFAULT_HEADERS = {
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Origin": "https://www.surfline.com",
+    "Referer": "https://www.surfline.com/",
+    "Connection": "keep-alive",
+    "DNT": "1",
+}
+
+
 class SurflineAPI:
-    def __init__(self):
+    def __init__(self, session: Optional[requests.Session] = None):
         logger.info("Initializing SurflineAPI")
+        self.session = session or requests.Session()
+        self._configure_session_headers()
+
+    def _configure_session_headers(self) -> None:
+        headers = DEFAULT_HEADERS.copy()
+        headers["User-Agent"] = get_user_agent()
+        self.session.headers.update(headers)
 
     def _get(self, url: str, params: dict) -> Optional[dict]:
         """A generic GET request handler."""
         try:
             full_url = requests.Request("GET", url, params=params).prepare().url
             logger.debug(f"Requesting {full_url}")
-            response = requests.get(url, params=params)
+            response = self.session.get(url, params=params)
             response.raise_for_status()
             logger.info(f"Successful API response from {url}")
             return response.json()

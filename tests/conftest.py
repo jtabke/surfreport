@@ -25,6 +25,17 @@ def load_json_fixture(fixtures_dir: Path) -> Callable[[str], Any]:
 
 
 @pytest.fixture
+def load_text_fixture(fixtures_dir: Path) -> Callable[[str], str]:
+    """Return a loader that reads text fixtures."""
+
+    def _loader(relative_path: str) -> str:
+        fixture_path = fixtures_dir / relative_path
+        return fixture_path.read_text(encoding="utf-8")
+
+    return _loader
+
+
+@pytest.fixture
 def make_args() -> Callable[..., SimpleNamespace]:
     """Factory fixture for building argparse-like namespaces."""
 
@@ -39,3 +50,16 @@ def make_args() -> Callable[..., SimpleNamespace]:
         return SimpleNamespace(**defaults)
 
     return _factory
+
+
+@pytest.fixture(autouse=True)
+def set_default_user_agent(monkeypatch):
+    """
+    Ensure tests use a predictable User-Agent (can be overridden per-test).
+    """
+    monkeypatch.setenv("SURFREPORT_USER_AGENT", "TestAgent/0.1")
+    from surf_report.utils import user_agent
+
+    user_agent.clear_cached_user_agent()
+    yield
+    user_agent.clear_cached_user_agent()

@@ -6,6 +6,17 @@ import requests
 from surf_report.providers.surfline.surfline import SurflineAPI
 
 
+class DummySession:
+    """Simple session stand-in for injecting responses."""
+
+    def __init__(self, responder):
+        self._responder = responder
+        self.headers = {}
+
+    def get(self, url, params):
+        return self._responder(url, params)
+
+
 class DummyResponse:
     """Lightweight stand-in for `requests.Response`."""
 
@@ -21,31 +32,18 @@ class DummyResponse:
         return self._payload
 
 
-def test__get_returns_json_on_success(monkeypatch):
-    api = SurflineAPI()
-
-    def fake_get(url, params):
-        return DummyResponse({"ok": True})
-
-    monkeypatch.setattr(
-        "surf_report.providers.surfline.surfline.requests.get", fake_get
-    )
-
+def test__get_returns_json_on_success():
+    api = SurflineAPI(session=DummySession(lambda *_: DummyResponse({"ok": True})))
     response = api._get("https://example.com", {"q": "test"})
 
     assert response == {"ok": True}
 
 
-def test__get_returns_none_on_request_exception(monkeypatch):
-    api = SurflineAPI()
-
-    def fake_get(url, params):
+def test__get_returns_none_on_request_exception():
+    def responder(*_):
         raise requests.exceptions.RequestException("boom")
 
-    monkeypatch.setattr(
-        "surf_report.providers.surfline.surfline.requests.get", fake_get
-    )
-
+    api = SurflineAPI(session=DummySession(responder))
     response = api._get("https://example.com", {"q": "test"})
 
     assert response is None
