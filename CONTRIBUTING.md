@@ -48,24 +48,20 @@ To set up the project for development:
 To maintain consistency and quality, please adhere to the following guidelines:
 
 - **Code Style**:
-
   - Follow PEP 8 for Python code style.
   - Use `ruff` for linting and import sorting (configured in `pyproject.toml` with `extend-select = ["I"]`).
   - Ensure type hints are used, as `pyright` is used for static type checking.
 
 - **File Structure**:
-
   - Place provider-specific code (e.g., Surfline API logic) in `src/surf_report/providers/<provider>/`.
   - Add utility functions to `src/surf_report/utils/`.
   - Update `main.py` for CLI-related changes and `ui.py` for display logic.
 
 - **Logging**:
-
   - Use the logger from `src/surf_report/utils/logger.py` for consistent logging.
   - Log debug information for API calls and errors, as shown in `surfline.py`.
 
 - **Commit Messages**:
-
   - Follow the [Conventional Commits](https://www.conventionalcommits.org/) format, enforced by `commitizen` (configured in `pyproject.toml`).
   - Example: `feat: add support for new surf report provider`.
 
@@ -138,6 +134,15 @@ To maintain consistency and quality, please adhere to the following guidelines:
 
 - **API Testing**:
   When modifying `surfline.py`, test against the Surfline API endpoints listed in `Endpoints(Enum)`. Mock API responses for consistent testing if possible.
+
+## Release Process
+
+- **Bump version and changelog locally**:
+  Use Commitizen to update `pyproject.toml` and `CHANGELOG.md`, which also creates the git tag (e.g., `cz bump --changelog`).
+- **Push commits and tags**:
+  After reviewing the changes, run `git push origin <branch> --follow-tags` so the semantic tag (format `X.Y.Z`) reaches GitHub.
+- **Automated publish**:
+  Tag pushes trigger the `Publish Release` workflow, which verifies the changelog entry, extracts the matching section for GitHub release notes, builds the distributions with `uv`, and publishes to PyPI via the trusted publisher configuration. No manual uploading is required as long as the changelog contains a matching `## X.Y.Z` heading.
 
 ## Roadmap and Feature Ideas
 

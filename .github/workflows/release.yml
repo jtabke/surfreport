@@ -1,0 +1,88 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: write
+      id-token: write
+
+    env:
+      RELEASE_VERSION: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Create virtual environment
+        run: uv venv
+
+      - name: Validate changelog entry
+        run: |
+          version="${RELEASE_VERSION}"
+          if ! grep -q "## ${version}" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md is missing an entry for ${version}"
+            exit 1
+          fi
+
+      - name: Ensure pyproject version matches tag
+        run: |
+          version="${RELEASE_VERSION}"
+          file_version=$(python - <<'PY'
+import tomllib
+from pathlib import Path
+data = tomllib.loads(Path("pyproject.toml").read_text())
+print(data["project"]["version"])
+PY
+)
+          if [ "$version" != "$file_version" ]; then
+            echo "::error::pyproject version ($file_version) does not match tag ($version)"
+            exit 1
+          fi
+
+      - name: Install build tooling
+        run: uv pip install -e ".[build]"
+
+      - name: Build distribution
+        run: uv build
+
+      - name: Generate release notes from changelog
+        run: |
+          set -euo pipefail
+          version="${RELEASE_VERSION}"
+          awk -v ver="${version}" 'BEGIN{found=0}
+            {
+              if ($0 ~ "^## " ver) {found=1; next}
+              if (found && /^## /) exit
+              if (found) print
+            }
+            END {if (found == 0) exit 1}' CHANGELOG.md | sed '/^\s*$/d' > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "::error::No release notes found for ${version} in CHANGELOG.md" >&2
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          body_path: release_notes.md
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
