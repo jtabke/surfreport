@@ -45,12 +45,12 @@ jobs:
         run: |
           version="${RELEASE_VERSION}"
           file_version=$(python - <<'PY'
-import tomllib
-from pathlib import Path
-data = tomllib.loads(Path("pyproject.toml").read_text())
-print(data["project"]["version"])
-PY
-)
+            import tomllib
+            from pathlib import Path
+            data = tomllib.loads(Path("pyproject.toml").read_text())
+            print(data["project"]["version"])
+          PY
+          )
           if [ "$version" != "$file_version" ]; then
             echo "::error::pyproject version ($file_version) does not match tag ($version)"
             exit 1
