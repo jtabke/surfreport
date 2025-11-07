@@ -14,9 +14,6 @@ jobs:
       contents: write
       id-token: write
 
-    env:
-      RELEASE_VERSION: ${{ github.ref_name }}
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -34,9 +31,19 @@ jobs:
       - name: Create virtual environment
         run: uv venv
 
+      - name: Determine release version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version=$(git describe --tags --abbrev=0)
+          else
+            version="${GITHUB_REF_NAME}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: Validate changelog entry
         run: |
-          version="${RELEASE_VERSION}"
+          version="${{ steps.version.outputs.version }}"
           if ! grep -q "## ${version}" CHANGELOG.md; then
             echo "::error::CHANGELOG.md is missing an entry for ${version}"
             exit 1
@@ -44,14 +51,8 @@ jobs:
 
       - name: Ensure pyproject version matches tag
         run: |
-          version="${RELEASE_VERSION}"
-          file_version=$(python - <<'PY'
-            import tomllib
-            from pathlib import Path
-            data = tomllib.loads(Path("pyproject.toml").read_text())
-            print(data["project"]["version"])
-          PY
-          )
+          version="${{ steps.version.outputs.version }}"
+          file_version=$(python -c "import tomllib; from pathlib import Path; data = tomllib.loads(Path('pyproject.toml').read_text()); print(data['project']['version'])")
           if [ "$version" != "$file_version" ]; then
             echo "::error::pyproject version ($file_version) does not match tag ($version)"
             exit 1
@@ -66,7 +67,7 @@ jobs:
       - name: Generate release notes from changelog
         run: |
           set -euo pipefail
-          version="${RELEASE_VERSION}"
+          version="${{ steps.version.outputs.version }}"
           awk -v ver="${version}" 'BEGIN{found=0}
             {
               if ($0 ~ "^## " ver) {found=1; next}
