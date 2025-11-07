@@ -12,6 +12,8 @@
 
 # surfreport
 
+[![Tests](https://github.com/jtabke/surfreport/actions/workflows/tests.yml/badge.svg)](https://github.com/jtabke/surfreport/actions/workflows/tests.yml)
+
 `surfreport` is a Python package that allows you to retrieve surf reports directly from the terminal. It fetches data from surf report APIs, providing a command-line interface (CLI) for easy access to current and forecasted surf conditions.
 
 ## Installation

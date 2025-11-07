@@ -1,0 +1,30 @@
+[
+  {
+    "hits": {
+      "total": 0
+    }
+  },
+  {
+    "hits": {
+      "total": 2,
+      "hits": [
+        {
+          "_id": "spot-123",
+          "_type": "spot",
+          "_source": {
+            "name": "Mavericks",
+            "breadCrumbs": ["California", "San Mateo", "Mavericks"]
+          }
+        },
+        {
+          "_id": "spot-456",
+          "_type": "spot",
+          "_source": {
+            "name": "Pleasure Point",
+            "breadCrumbs": ["California", "Santa Cruz", "Pleasure Point"]
+          }
+        }
+      ]
+    }
+  }
+]

@@ -18,7 +18,7 @@ classifiers = [
 dependencies = ["requests"]
 
 [project.optional-dependencies]
-dev = ["ruff", "pyright"]
+dev = ["ruff", "pyright", "pytest"]
 build = ["build", "twine", "commitizen"]
 
 [project.urls]

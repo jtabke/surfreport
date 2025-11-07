@@ -127,7 +127,14 @@ To maintain consistency and quality, please adhere to the following guidelines:
   Verify that search results, region navigation, and forecast displays work as expected.
 
 - **Automated Testing**:
-  Currently, the project lacks automated tests. Contributions to add a testing framework (e.g., `pytest`) are welcome. Focus on testing API interactions (`surfline.py`) and data processing (`processing.py`).
+  Run the pytest suite locally before raising a PR:
+
+  ```sh
+  uv pip install -e ".[dev]"  # Installs requests + ruff + pyright + pytest
+  uv run pytest -q
+  ```
+
+  The suite includes provider, processing, and CLI coverage with mocked Surfline payloads. Add or update fixtures under `tests/fixtures/surfline/` when modifying API contracts.
 
 - **API Testing**:
   When modifying `surfline.py`, test against the Surfline API endpoints listed in `Endpoints(Enum)`. Mock API responses for consistent testing if possible.

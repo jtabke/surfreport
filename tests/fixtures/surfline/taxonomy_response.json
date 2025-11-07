@@ -1,0 +1,18 @@
+{
+  "contains": [
+    {
+      "_id": "region-1",
+      "name": "Northern California",
+      "type": "subregion",
+      "subregion": "subregion-1",
+      "spot": null
+    },
+    {
+      "_id": "spot-1",
+      "name": "Ocean Beach",
+      "type": "spot",
+      "subregion": null,
+      "spot": "spot-1"
+    }
+  ]
+}

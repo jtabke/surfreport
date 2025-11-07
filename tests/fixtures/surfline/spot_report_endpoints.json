@@ -1,0 +1,120 @@
+{
+  "wave": {
+    "data": {
+      "wave": [
+        {
+          "timestamp": 1001,
+          "utcOffset": 0,
+          "surf": {
+            "min": 2,
+            "max": 4,
+            "humanRelation": "Fair"
+          },
+          "swells": [
+            {
+              "height": 3,
+              "direction": 270,
+              "power": 40
+            },
+            {
+              "height": 0,
+              "direction": 0,
+              "power": 0
+            }
+          ]
+        },
+        {
+          "timestamp": 1002,
+          "utcOffset": 0,
+          "surf": {
+            "min": 3,
+            "max": 5,
+            "humanRelation": "Good"
+          },
+          "swells": []
+        }
+      ]
+    }
+  },
+  "weather": {
+    "data": {
+      "weather": [
+        {
+          "timestamp": 1001,
+          "utcOffset": 0,
+          "temperature": 65,
+          "condition": "Sunny"
+        },
+        {
+          "timestamp": 1002,
+          "utcOffset": 0,
+          "temperature": 62,
+          "condition": "Cloudy"
+        }
+      ]
+    }
+  },
+  "tides": {
+    "data": {
+      "tides": [
+        {
+          "timestamp": 1001,
+          "utcOffset": 0,
+          "height": 3.5,
+          "type": "HIGH"
+        },
+        {
+          "timestamp": 1002,
+          "utcOffset": 0,
+          "height": 0.1,
+          "type": "LOW"
+        },
+        {
+          "timestamp": 1003,
+          "utcOffset": 0,
+          "height": 1.0,
+          "type": "FALLING"
+        }
+      ]
+    }
+  },
+  "surf": {
+    "data": {
+      "surf": []
+    }
+  },
+  "sunlight": {
+    "data": {
+      "sunlight": [
+        {
+          "dawn": 2001,
+          "dawnUTCOffset": 0,
+          "sunrise": 2002,
+          "sunriseUTCOffset": 0,
+          "sunset": 2003,
+          "sunsetUTCOffset": 0,
+          "dusk": 2004,
+          "duskUTCOffset": 0
+        }
+      ]
+    }
+  },
+  "wind": {
+    "data": {
+      "wind": [
+        {
+          "timestamp": 1001,
+          "utcOffset": 0,
+          "speed": 5,
+          "direction": 270,
+          "directionType": "Offshore"
+        }
+      ]
+    }
+  },
+  "swells": {
+    "data": {
+      "swells": []
+    }
+  }
+}
