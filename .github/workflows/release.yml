@@ -15,9 +15,26 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Repository (initial)
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
+
+      - name: Determine release version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version=$(git describe --tags --abbrev=0)
+          else
+            version="${GITHUB_REF_NAME}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout tag commit
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ steps.version.outputs.version }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -30,16 +47,6 @@ jobs:
 
       - name: Create virtual environment
         run: uv venv
-
-      - name: Determine release version
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            version=$(git describe --tags --abbrev=0)
-          else
-            version="${GITHUB_REF_NAME}"
-          fi
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Validate changelog entry
         run: |
@@ -83,6 +90,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.version }}
           files: dist/*
           body_path: release_notes.md
 
